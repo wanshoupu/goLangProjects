@@ -1,0 +1,17 @@
+**/.DS_Store
+*.DS_Store
+.classpath
+.gradle
+.git
+.idea
+.project
+.settings
+.settings/
+/classes
+Users
+bin
+build
+build-eclipse
+out
+src/generated/
+tmp
