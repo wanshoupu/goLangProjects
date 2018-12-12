@@ -25,14 +25,16 @@ int* part(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     while(true) {
          // the left partition is strictly less than the pivot
-         while(s < e && *++s < *pivot); // find the next element >= pivot
-         // the right partition is  greater than or equal to the pivot
-         while(s < e && *--e > *pivot); // find the prev element < pivot
-         if (e <= s) {
-             // swap(pivot, s - 1); // insert the pivot element
-             return s - 1; // shortening the left partition by shrink back the pivot element
+         while(s < e && *s < *pivot) {  // find the next element >= pivot
+             ++s;
          }
-         swap(s, e); //swap the out-of-place elements
+         // the right partition is  greater than or equal to the pivot
+         while(s < e && *--e > *pivot); // find the prev element <= pivot
+         if (e > s) {
+             swap(s, e); //swap the out-of-place elements
+         } else {
+             return e;
+         }
     }
 }
 
@@ -57,7 +59,7 @@ void qSort(int* s, int* e) {
 }
 
 int main() {
-    int test[] = {15,-1,-1,5, 10,1, 5, 1, 5, -10, 3, -4, 7, 77, -58, 5}; // 
+    int test[] = {15,-1,-1,5, 10,1, 5, 1, 5, -10, 3, -4, 7, 77, -58, 5}; //
     const int size = 16;
     print(test, size);
     qSort(test, test + size);
