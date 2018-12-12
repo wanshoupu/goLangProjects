@@ -38,19 +38,20 @@ void init_swap(int* s, int* e) {
 }
 
 int* part(int* s, int*e) {
-    int* const pivot = s;
     init_swap(s, e);
+    int pivot = *s--;
+    // printf("Pivot: %d\n", pivot);
     while(true) {
          // the left partition is strictly less than the pivot
-         while( *s < *pivot) {  // find the next element >= pivot
-             ++s;
-         }
+         while( *++s < pivot);   // find the next element >= pivot
          // the right partition is  greater than or equal to the pivot
-         while( *--e > *pivot); // find the prev element <= pivot
+         while( *--e > pivot); // find the prev element <= pivot
          if (e > s) {
+             // printf("swap: s=%d, e=%d\n", s, e);
              swap(s, e); //swap the out-of-place elements
          } else {
-             return e;
+             // assert(*s == pivot, "cut is not equal to pivot");
+             return s;
          }
     }
 }
@@ -76,8 +77,14 @@ void qSort(int* s, int* e) {
          return;
      }
      int* p = part(s, e);
+     // printf("whole arr: ");
+     // print(s, e);
+     // printf("left: ");
+     // print(s, p);
+     // printf("right: ");
+     // print(p,e);
      qSort(s, p);
-     qSort(p + 1, e);
+     qSort(p, e);
 }
 
 bool is_sorted(int* s, int* e) {
@@ -99,6 +106,8 @@ const char* msg = "Error: array not sorted properly\n";
 void unit_test_0() {
     int test[] = {}; //
     const int size = 0;
+    printf("Unit test: ");
+    print(test, size);
     qSort(test, test + size);
     assert(is_sorted(test, test + size), msg);
 }
@@ -106,6 +115,8 @@ void unit_test_0() {
 void unit_test_1() {
     int test[] = {-1}; //
     const int size = 1;
+    printf("Unit test: ");
+    print(test, size);
     qSort(test, test + size);
     assert(is_sorted(test, test + size), msg);
 }
@@ -113,6 +124,8 @@ void unit_test_1() {
 void unit_test_2() {
     int test[] = {-1, -15}; //
     const int size = 2;
+    printf("Unit test: ");
+    print(test, size);
     qSort(test, test + size);
     assert(is_sorted(test, test + size), msg);
 }
@@ -120,6 +133,8 @@ void unit_test_2() {
 void unit_test_3() {
     int test[] = {15, -1, -15}; //
     const int size = 3;
+    printf("Unit test: ");
+    print(test, size);
     qSort(test, test + size);
     assert(is_sorted(test, test + size), msg);
 }
@@ -127,6 +142,8 @@ void unit_test_3() {
 void unit_test_eq() {
     int test[] = {-15, -15, -15}; //
     const int size = 3;
+    printf("Unit test: ");
+    print(test, size);
     qSort(test, test + size);
     assert(is_sorted(test, test + size), msg);
 }
@@ -134,6 +151,8 @@ void unit_test_eq() {
 void unit_test_4() {
     int test[] = {-15, 15, -1, -15}; //
     const int size = 4;
+    printf("Unit test: ");
+    print(test, size);
     qSort(test, test + size);
     assert(is_sorted(test, test + size), msg);
 }
@@ -141,6 +160,8 @@ void unit_test_4() {
 void unit_test_happy() {
     int test[] = {15,-1,-1,5, 10,1, 5, 1, 5, -10, 3, -4, 7, 77, -58, 5}; //
     const int size = 16;
+    printf("Unit test: ");
+    print(test, size);
     qSort(test, test + size);
     assert(is_sorted(test, test + size), msg);
 }
