@@ -80,10 +80,77 @@ void qSort(int* s, int* e) {
      qSort(p + 1, e);
 }
 
-int main() {
+bool is_sorted(int* s, int* e) {
+    for(s++; s < e; s++) {
+        if (*(s-1) > *s) return false;
+    }
+    return true;
+}
+
+void assert(bool claim, const char* msg) {
+    if (!claim) {
+        printf("%s", msg);
+        exit(1);
+    }
+}
+
+const char* msg = "Error: array not sorted properly\n";
+
+void unit_test_0() {
+    int test[] = {}; //
+    const int size = 0;
+    qSort(test, test + size);
+    assert(is_sorted(test, test + size), msg);
+}
+
+void unit_test_1() {
+    int test[] = {-1}; //
+    const int size = 1;
+    qSort(test, test + size);
+    assert(is_sorted(test, test + size), msg);
+}
+
+void unit_test_2() {
+    int test[] = {-1, -15}; //
+    const int size = 2;
+    qSort(test, test + size);
+    assert(is_sorted(test, test + size), msg);
+}
+
+void unit_test_3() {
+    int test[] = {15, -1, -15}; //
+    const int size = 3;
+    qSort(test, test + size);
+    assert(is_sorted(test, test + size), msg);
+}
+
+void unit_test_eq() {
+    int test[] = {-15, -15, -15}; //
+    const int size = 3;
+    qSort(test, test + size);
+    assert(is_sorted(test, test + size), msg);
+}
+
+void unit_test_4() {
+    int test[] = {-15, 15, -1, -15}; //
+    const int size = 4;
+    qSort(test, test + size);
+    assert(is_sorted(test, test + size), msg);
+}
+
+void unit_test_happy() {
     int test[] = {15,-1,-1,5, 10,1, 5, 1, 5, -10, 3, -4, 7, 77, -58, 5}; //
     const int size = 16;
-    print(test, size);
     qSort(test, test + size);
-    print(test, size);
+    assert(is_sorted(test, test + size), msg);
+}
+
+int main() {
+    unit_test_0();
+    unit_test_1();
+    unit_test_2();
+    unit_test_3();
+    unit_test_4();
+    unit_test_eq();
+    unit_test_happy();
 }
