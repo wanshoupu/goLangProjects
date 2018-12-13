@@ -37,9 +37,26 @@ void init_swap(int* s, int* e) {
     swap(e - 1, s + 2); // e - 1, has the maximum of the 3
 }
 
-int* part(int* s, int*e) {
+int* part_original(int* s, int*e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s;
+    while(true) {
+         while(s < e && *++s < *pivot) {  // find the next element >= pivot
+             ++s;
+         }
+         while(pivot < e && *--e > *pivot); // find the prev element <= pivot
+         if (s < e) {
+             swap(s, e); //swap the out-of-place elements
+         } else {
+             swap(pivot, e);
+             return e;
+         }
+    }
+}
+
+int* part_sentinel(int* s, int*e) {
     init_swap(s, e);
-    int* pivot = s;
+    int* const pivot = s;
     while(true) {
          while(*++s < *pivot);   // find the next element >= pivot
          while(*--e > *pivot); // find the prev element <= pivot
@@ -72,7 +89,7 @@ void qSort(int* s, int* e) {
              swap(s, e - 1);
          return;
      }
-     int* p = part(s, e);
+     int* p = part_sentinel(s, e);
      // printf("whole arr: ");
      // print(s, e);
      // printf("left: ");
