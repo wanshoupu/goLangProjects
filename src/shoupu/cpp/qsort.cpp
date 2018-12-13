@@ -52,6 +52,24 @@ int* part_original(int* s, int*e) {
     }
 }
 
+int* part_thin_loop(int* s, int*e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s++;
+    e--;
+    while(true) {
+         if (s < e && *s < *pivot) {  // find the next element >= pivot
+             ++s;
+         } else if (pivot < e && *e > *pivot) { // find the prev element <= pivot
+             --e;
+         } else if (s < e) {
+             swap(s++, e--); //swap the out-of-place elements
+         } else {
+             swap(pivot, e);
+             return e;
+         }
+    }
+}
+
 int* part_sentinel(int* s, int*e) {
     init_swap(s, e);
     int* const pivot = s;
@@ -87,7 +105,7 @@ void qSort(int* s, int* e) {
              swap(s, e - 1);
          return;
      }
-     int* p = part_original(s, e);
+     int* p = part_thin_loop(s, e);
      // printf("whole arr: ");
      // print(s, e);
      // printf("left: ");
