@@ -40,16 +40,10 @@ void init_swap(int* s, int* e) {
 int* part(int* s, int*e) {
     init_swap(s, e);
     int* pivot = s;
-    printf("Pivot: %d\n", *pivot);
     while(true) {
-         printf("Start with: s=%d (%d), e=%d (%d)\n", s-pivot, *s, e-pivot, *e);
-         print(s,e);
-         // the left partition is strictly less than the pivot
-         while(*++s < *pivot){printf("Increment s\n");}   // find the next element >= pivot
-         // the right partition is  greater than or equal to the pivot
-         while(*--e > *pivot){printf("Decrement e\n");} // find the prev element <= pivot
-         printf("End with: s=%d (%d), e=%d (%d)\n", s-pivot, *s, e-pivot, *e);
-         if (s <= e) {
+         while(*++s < *pivot);   // find the next element >= pivot
+         while(*--e > *pivot); // find the prev element <= pivot
+         if (s < e) {
              swap(s, e); //swap the out-of-place elements
          } else {
              swap(pivot, e);
