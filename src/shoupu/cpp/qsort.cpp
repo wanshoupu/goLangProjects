@@ -41,9 +41,7 @@ int* part_original(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while(true) {
-         while(s < e && *++s < *pivot) {  // find the next element >= pivot
-             ++s;
-         }
+         while(s < e && *++s < *pivot);  // find the next element >= pivot
          while(pivot < e && *--e > *pivot); // find the prev element <= pivot
          if (s < e) {
              swap(s, e); //swap the out-of-place elements
@@ -89,7 +87,7 @@ void qSort(int* s, int* e) {
              swap(s, e - 1);
          return;
      }
-     int* p = part_sentinel(s, e);
+     int* p = part_original(s, e);
      // printf("whole arr: ");
      // print(s, e);
      // printf("left: ");
@@ -179,6 +177,18 @@ void unit_test_4() {
     assert(is_sorted(test, test + size), msg);
 }
 
+void unit_test_stepping() {
+    const int size = 100;
+    int test[size];
+    for (int i = 0; i < size; ++i) {
+        test[i] = rand();
+    }
+    printf("Unit test: ");
+    print(test, size);
+    qSort(test, test + size);
+    assert(is_sorted(test, test + size), msg);
+}
+
 void unit_test_happy() {
     int test[] = {15,-1,-1,5, 10,1, 5, 1, 5, -10, 3, -4, 7, 77, -58, 5}; //
     const int size = 16;
@@ -194,6 +204,7 @@ int main() {
     unit_test_2();
     unit_test_3();
     unit_test_4();
+    unit_test_stepping();
     unit_test_big_cross();
     unit_test_eq();
     unit_test_happy();
