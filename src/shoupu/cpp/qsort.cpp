@@ -40,14 +40,16 @@ void init_swap(int* s, int* e) {
 int* part(int* s, int*e) {
     init_swap(s, e);
     int* pivot = s;
-    // printf("Pivot: %d\n", *pivot);
+    printf("Pivot: %d\n", *pivot);
     while(true) {
+         printf("Start with: s=%d (%d), e=%d (%d)\n", s-pivot, *s, e-pivot, *e);
+         print(s,e);
          // the left partition is strictly less than the pivot
-         while( *++s < *pivot);   // find the next element >= pivot
+         while(*++s < *pivot){printf("Increment s\n");}   // find the next element >= pivot
          // the right partition is  greater than or equal to the pivot
-         while( *--e > *pivot); // find the prev element <= pivot
-         if (s < e) {
-             // printf("swap: s=%d (%d), e=%d (%d)\n", s-pivot, *s, e-pivot, *e);
+         while(*--e > *pivot){printf("Decrement e\n");} // find the prev element <= pivot
+         printf("End with: s=%d (%d), e=%d (%d)\n", s-pivot, *s, e-pivot, *e);
+         if (s <= e) {
              swap(s, e); //swap the out-of-place elements
          } else {
              swap(pivot, e);
@@ -139,6 +141,15 @@ void unit_test_3() {
     assert(is_sorted(test, test + size), msg);
 }
 
+void unit_test_big_cross() {
+    int test[] = {-1, -15, -15, -15, -15, -15, -15, -15}; //
+    const int size = 8;
+    printf("Unit test: ");
+    print(test, size);
+    qSort(test, test + size);
+    assert(is_sorted(test, test + size), msg);
+}
+
 void unit_test_eq() {
     int test[] = {-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,}; //
     const int size = 64;
@@ -172,6 +183,7 @@ int main() {
     unit_test_2();
     unit_test_3();
     unit_test_4();
+    unit_test_big_cross();
     unit_test_eq();
     unit_test_happy();
 }
