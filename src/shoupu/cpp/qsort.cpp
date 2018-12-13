@@ -46,8 +46,8 @@ int* part(int* s, int*e) {
          while( *++s < *pivot);   // find the next element >= pivot
          // the right partition is  greater than or equal to the pivot
          while( *--e > *pivot); // find the prev element <= pivot
-         if (e >= s) {
-             // printf("swap: s=%d, e=%d\n", s, e);
+         if (s < e) {
+             // printf("swap: s=%d (%d), e=%d (%d)\n", s-pivot, *s, e-pivot, *e);
              swap(s, e); //swap the out-of-place elements
          } else {
              swap(pivot, e);
