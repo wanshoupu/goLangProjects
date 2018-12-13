@@ -39,19 +39,19 @@ void init_swap(int* s, int* e) {
 
 int* part(int* s, int*e) {
     init_swap(s, e);
-    int pivot = *s--;
-    // printf("Pivot: %d\n", pivot);
+    int* pivot = s;
+    // printf("Pivot: %d\n", *pivot);
     while(true) {
          // the left partition is strictly less than the pivot
-         while( *++s < pivot);   // find the next element >= pivot
+         while( *++s < *pivot);   // find the next element >= pivot
          // the right partition is  greater than or equal to the pivot
-         while( *--e > pivot); // find the prev element <= pivot
-         if (e > s) {
+         while( *--e > *pivot); // find the prev element <= pivot
+         if (e >= s) {
              // printf("swap: s=%d, e=%d\n", s, e);
              swap(s, e); //swap the out-of-place elements
          } else {
-             // assert(*s == pivot, "cut is not equal to pivot");
-             return s;
+             swap(pivot, e);
+             return e;
          }
     }
 }
@@ -59,7 +59,7 @@ int* part(int* s, int*e) {
 int* part1(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int * p = s;
-    printf("Pivot: %d\n", *p);
+    // printf("Pivot: %d\n", *p);
     for(int* i = s; i < e; i++ ) {
         if (*i < *s) {
             swap(++p, i); //swap the out-of-place elements
@@ -77,14 +77,14 @@ void qSort(int* s, int* e) {
          return;
      }
      int* p = part(s, e);
-     printf("whole arr: ");
-     print(s, e);
-     printf("left: ");
-     print(s, p);
-     printf("right: ");
-     print(p,e);
+     // printf("whole arr: ");
+     // print(s, e);
+     // printf("left: ");
+     // print(s, p);
+     // printf("right: ");
+     // print(p,e);
      qSort(s, p);
-     qSort(p, e);
+     qSort(p + 1, e);
 }
 
 bool is_sorted(int* s, int* e) {
