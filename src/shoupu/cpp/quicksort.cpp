@@ -1,9 +1,6 @@
 #include "sort_utils.h"
 
-void quicksort_simple(int* arr, int left, int right) {
-    if (left >= right)
-       return;
-
+int part_simple(int* arr, int left, int right) {
     int pivot = arr[left];
     int i = left;
     for (int j = right; i < j;) {
@@ -19,15 +16,10 @@ void quicksort_simple(int* arr, int left, int right) {
     }
     arr[left] = arr[i];
     arr[i] = pivot;
-
-    quicksort_simple(arr, left, i - 1);
-    quicksort_simple(arr, i + 1, right);
+    return i;
 }
 
-void quicksort(int* arr, int left, int right) {
-    if (left > right)
-       return;
-
+int part_nested(int* arr, int left, int right) {
     int pivot = arr[left];
     int i = left;
     for (int j = right; i != j;) {
@@ -44,7 +36,14 @@ void quicksort(int* arr, int left, int right) {
     }
     arr[left] = arr[i];
     arr[i] = pivot;
+    return i;
+}
 
+void quicksort(int* arr, int left, int right) {
+    if (left >= right)
+       return;
+
+    int i = part_simple(arr, left, right);
     quicksort(arr, left, i - 1);
     quicksort(arr, i + 1, right);
 }
@@ -54,7 +53,7 @@ const char* msg = "Error: array not sorted properly\n";
 void unit_test(int* test, int size) {
     printf("Unit test: ");
     print(test, size);
-    quicksort_simple(test, 0, size - 1);
+    quicksort(test, 0, size - 1);
     assert(is_sorted(test + 1, test + size), msg);
 }
 
