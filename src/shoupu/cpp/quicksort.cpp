@@ -1,52 +1,52 @@
 #include "sort_utils.h"
 
-void quicksort_simple(int* a, int left, int right) {
+void quicksort_simple(int* arr, int left, int right) {
     if (left >= right)
        return;
 
-    int pivot = a[left];
+    int pivot = arr[left];
     int i = left;
     for (int j = right; i < j;) {
-        if (a[j] >= pivot)
+        if (arr[j] >= pivot)
             j--;
-        else if (a[i] <= pivot)
+        else if (arr[i] <= pivot)
             i++;
         else {
-            int t = a[i];
-            a[i] = a[j];
-            a[j] = t;
+            int t = arr[i];
+            arr[i] = arr[j];
+            arr[j] = t;
         }
     }
-    a[left] = a[i];
-    a[i] = pivot;
+    arr[left] = arr[i];
+    arr[i] = pivot;
 
-    quicksort_simple(a, left, i - 1);
-    quicksort_simple(a, i + 1, right);
+    quicksort_simple(arr, left, i - 1);
+    quicksort_simple(arr, i + 1, right);
 }
 
-void quicksort(int* a, int left, int right) {
+void quicksort(int* arr, int left, int right) {
     if (left > right)
        return;
 
-    int pivot = a[left];
+    int pivot = arr[left];
     int i = left;
     for (int j = right; i != j;) {
         // note the order: right first, then left
-        while (a[j] >= pivot && i < j)
+        while (arr[j] >= pivot && i < j)
             j--;
-        while (a[i] <= pivot && i < j)
+        while (arr[i] <= pivot && i < j)
             i++;
         if (i < j) {
-            int t = a[i];
-            a[i] = a[j];
-            a[j] = t;
+            int t = arr[i];
+            arr[i] = arr[j];
+            arr[j] = t;
         }
     }
-    a[left] = a[i];
-    a[i] = pivot;
+    arr[left] = arr[i];
+    arr[i] = pivot;
 
-    quicksort(a, left, i - 1);
-    quicksort(a, i + 1, right);
+    quicksort(arr, left, i - 1);
+    quicksort(arr, i + 1, right);
 }
 
 const char* msg = "Error: array not sorted properly\n";
