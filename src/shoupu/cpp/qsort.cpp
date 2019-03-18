@@ -22,6 +22,23 @@ void print(int a[], const int s) {
 
 void init_swap(int* s, int* e) {
     // could be as simple as swap(s, s + rand() % (e - s));
+    // elect 3 elements at position s, m, l = e-1, respectively
+    // put the median at s, small at m, and large at l
+    int* m = s + (e - s) / 2;
+    int* l = e - 1;
+    if (*l < *m) {
+        swap(l, m);
+    }
+    if (*l < *s) {
+        swap(l, s);
+    }
+    if (*s < *m) {
+        swap(s, m);
+    }
+}
+
+void rand_swap(int* s, int* e) {
+    // could be as simple as swap(s, s + rand() % (e - s));
     for (int i = 0; i < 3; i++) {
         swap(s + i, s + i + rand() % (e - s - i));
     } // elect 3 elements and put them at positions: s, s+1, s+2
@@ -85,6 +102,27 @@ int* part_sentinel(int* s, int*e) {
    }
 }
 
+int* part(int* s, int*e) {
+    init_swap(s, e);
+    int* const pivot = s++;
+    --e;
+    while(true) {
+         if (*s < *pivot) {  // find the next element >= pivot
+             ++s;
+         } else if (*e > *pivot) { // find the prev element <= pivot
+             --e;
+         } else if (s < e) {
+             swap(s++, e--); //swap the out-of-place elements
+         } else {
+             swap(pivot, e);
+             return e;
+         }
+    }
+}
+
+/**
+This is the Lomuto's partitioning scheme
+*/
 int* part1(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int * p = s;
@@ -105,7 +143,7 @@ void qSort(int* s, int* e) {
              swap(s, e - 1);
          return;
      }
-     int* p = part_thin_loop(s, e);
+     int* p = part(s, e);
      qSort(s, p);
      qSort(p + 1, e);
 }
