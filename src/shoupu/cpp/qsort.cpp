@@ -1,24 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-
-void swap(int* a, int* b) {
-    // printf("Swap: %d <--> %d\n", *a, *b);
-    int t = *a;
-    *a = *b;
-    *b = t;
-}
-
-void print(int* s, int* e) {
-    printf("Array(%ld): ", e-s);
-    for(; s < e; s++) {
-        printf("%d, ", *s);
-    }
-    printf("\n");
-}
-
-void print(int a[], const int s) {
-    print(a,a+s);
-}
+#include "sort_utils.h"
 
 void init_swap(int* s, int* e) {
     // could be as simple as swap(s, s + rand() % (e - s));
@@ -148,83 +128,55 @@ void qSort(int* s, int* e) {
      qSort(p + 1, e);
 }
 
-bool is_sorted(int* s, int* e) {
-    for(s++; s < e; s++) {
-        if (*(s-1) > *s) return false;
-    }
-    return true;
-}
-
-void assert(bool claim, const char* msg) {
-    if (!claim) {
-        printf("%s", msg);
-        exit(1);
-    }
-}
-
 const char* msg = "Error: array not sorted properly\n";
+
+void unit_test(int* test, int size) {
+    printf("Unit test: ");
+    print(test, size);
+    qSort(test, test + size);
+    assert(is_sorted(test + 1, test + size), msg);
+}
 
 void unit_test_0() {
     int test[] = {}; //
     const int size = 0;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_test_1() {
     int test[] = {-1}; //
     const int size = 1;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_test_2() {
     int test[] = {-1, -15}; //
     const int size = 2;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_test_3() {
     int test[] = {15, -1, -15}; //
     const int size = 3;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_test_big_cross() {
     int test[] = {-1, -15, -15, -15, -15, -15, -15, -15}; //
     const int size = 8;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_test_eq() {
     int test[] = {-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,-15, -15, -15,}; //
     const int size = 64;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_test_4() {
     int test[] = {-15, 15, -1, -15}; //
     const int size = 4;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_test_stepping() {
@@ -233,19 +185,13 @@ void unit_test_stepping() {
     for (int i = 0; i < size; ++i) {
         test[i] = rand();
     }
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_test_happy() {
     int test[] = {15,-1,-1,5, 10,1, 5, 1, 5, -10, 3, -4, 7, 77, -58, 5}; //
     const int size = 16;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 void unit_left_bound_exception() {
