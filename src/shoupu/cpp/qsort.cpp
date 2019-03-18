@@ -41,14 +41,14 @@ int* part_original(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while(true) {
-         while(s < e && *++s < *pivot);  // find the next element >= pivot
-         while(pivot < e && *--e > *pivot); // find the prev element <= pivot
-         if (s < e) {
-             swap(s, e); //swap the out-of-place elements
-         } else {
-             swap(pivot, e);
-             return e;
-         }
+        while(s < e && *++s < *pivot);  // find the next element >= pivot
+        while(pivot < e && *--e > *pivot); // find the prev element <= pivot
+        if (s < e) {
+            swap(s, e); //swap the out-of-place elements
+        } else {
+            swap(pivot, e);
+            return e;
+        }
     }
 }
 
@@ -79,10 +79,10 @@ int* part_sentinel(int* s, int*e) {
          if (s < e) {
              swap(s, e); //swap the out-of-place elements
          } else {
-             swap(pivot, e);
-             return e;
-         }
-    }
+           swap(pivot, e);
+           return e;
+       }
+   }
 }
 
 int* part1(int* s, int*e) {
@@ -106,12 +106,6 @@ void qSort(int* s, int* e) {
          return;
      }
      int* p = part_thin_loop(s, e);
-     // printf("whole arr: ");
-     // print(s, e);
-     // printf("left: ");
-     // print(s, p);
-     // printf("right: ");
-     // print(p,e);
      qSort(s, p);
      qSort(p + 1, e);
 }
@@ -216,7 +210,18 @@ void unit_test_happy() {
     assert(is_sorted(test, test + size), msg);
 }
 
+void unit_left_bound_exception() {
+    int test[] = {15, -77, 7, -58, 5}; //
+    const int size = 5;
+    printf("Unit test: ");
+    print(test, size);
+    qSort(test, test + size);
+    print(test, size);
+    assert(is_sorted(test, test + size), msg);
+}
+
 int main() {
+    unit_left_bound_exception();
     unit_test_0();
     unit_test_1();
     unit_test_2();
