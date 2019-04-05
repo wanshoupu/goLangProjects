@@ -49,6 +49,28 @@ int* part_original(int* s, int*e) {
     }
 }
 
+/**
+ * Variation of partition scheme from part_original.
+ * The two differs in three ways
+ * - order of the two while loops
+ * - increment condition for equal element pointer
+ * - return pointer choice between s and e
+ */
+int* part_original_var(int* s, int*e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s;
+    while(true) {
+        while(s < e && *pivot <= *e) --e; // find the prev element <= pivot
+        while(s < e && *s <= *pivot) ++s;  // find the next element >= pivot
+        if (s < e) {
+            swap(s, e); //swap the out-of-place elements
+        } else {
+            swap(pivot, e);
+            return s;
+        }
+    }
+}
+
 int* part_thin_loop(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s++;
@@ -123,7 +145,7 @@ void qSort(int* s, int* e) {
              swap(s, e - 1);
          return;
      }
-     int* p = part(s, e);
+     int* p = part_original_var(s, e);
      qSort(s, p);
      qSort(p + 1, e);
 }

@@ -20,30 +20,42 @@ int part_simple(int* arr, int left, int right) {
 }
 
 int part_nested(int* arr, int left, int right) {
-    int pivot = arr[left];
-    int i = left;
-    for (int j = right; i != j;) {
+    for (int i = left, j = right; ;) {
         // note the order: right first, then left
-        while (arr[j] >= pivot && i < j)
+        while (arr[j] >= arr[left] && i < j)
             j--;
-        while (arr[i] <= pivot && i < j)
+        while (arr[i] <= arr[left] && i < j)
             i++;
         if (i < j) {
-            int t = arr[i];
-            arr[i] = arr[j];
-            arr[j] = t;
+            swap(arr + i, arr + j);
+        } else {
+            swap(arr + i, arr + left);
+            return i;
         }
     }
-    arr[left] = arr[i];
-    arr[i] = pivot;
-    return i;
+}
+
+int part_unnested(int* arr, int left, int right) {
+    for (int i = left, j = right; ;) {
+        // note the order: right first, then left
+        if (arr[j] >= arr[left] && i < j)
+            j--;
+        else if (arr[i] <= arr[left] && i < j)
+            i++;
+        else if (i < j) {
+            swap(arr + i, arr + j);
+        } else {
+            swap(arr + i, arr + left);
+            return i;
+        }
+    }
 }
 
 void quicksort(int* arr, int left, int right) {
     if (left >= right)
        return;
 
-    int i = part_simple(arr, left, right);
+    int i = part_unnested(arr, left, right);
     quicksort(arr, left, i - 1);
     quicksort(arr, i + 1, right);
 }
