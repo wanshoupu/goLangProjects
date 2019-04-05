@@ -8,16 +8,6 @@ void swap(int* a, int* b) {
     *b = t;
 }
 
-bool is_sorted(int* s, int* e) {
-    for(int* r = s; r < e; ++r)
-        printf("%d (%d), ", r - s, *r);
-    printf("\n");
-    for(s++; s < e; s++) {
-        if (*(s - 1) > *s) return false;
-    }
-    return true;
-}
-
 void assert(bool claim, const char* msg) {
     if (!claim) {
         printf("%s", msg);
@@ -26,13 +16,24 @@ void assert(bool claim, const char* msg) {
 }
 
 void print(int* s, int* e) {
-    printf("Array(%ld): \n", e - s);
+    printf("\nIndexs: ");
+    for(int* r = s; r < e; ++r)
+        printf("%6d, ", r - s);
+    printf("\nValues: ");
     for(; s < e; s++) {
-        printf("%d, ", *s);
+        printf("%6d, ", *s);
     }
     printf("\n");
 }
 
 void print(int a[], const int s) {
     print(a,a + s);
+}
+
+bool is_sorted(int* s, int* e) {
+    print(s, e);
+    for(s++; s < e; s++) {
+        if (*(s - 1) > *s) return false;
+    }
+    return true;
 }

@@ -153,10 +153,10 @@ void qSort(int* s, int* e) {
 const char* msg = "Error: array not sorted properly\n";
 
 void unit_test(int* test, int size) {
-    printf("Unit test: ");
     print(test, size);
     qSort(test, test + size);
-    assert(is_sorted(test + 1, test + size), msg);
+    assert(is_sorted(test, test + size), msg);
+    printf("Unit test success!\n========================\n");
 }
 
 void unit_test_0() {
@@ -219,22 +219,28 @@ void unit_test_happy() {
 void unit_left_bound_exception() {
     int test[] = {15, -77, 7, -58, 5}; //
     const int size = 5;
-    printf("Unit test: ");
-    print(test, size);
-    qSort(test, test + size);
-    print(test, size);
-    assert(is_sorted(test, test + size), msg);
+    unit_test(test, size);
 }
 
 int main() {
+    printf("unit_left_bound_exception");
     unit_left_bound_exception();
+    printf("unit_test_0");
     unit_test_0();
+    printf("unit_test_1");
     unit_test_1();
+    printf("unit_test_2");
     unit_test_2();
+    printf("unit_test_3");
     unit_test_3();
+    printf("unit_test_4");
     unit_test_4();
+    printf("unit_test_stepping");
     unit_test_stepping();
+    printf("unit_test_big_cross");
     unit_test_big_cross();
+    printf("unit_test_eq");
     unit_test_eq();
+    printf("unit_test_happy");
     unit_test_happy();
 }
