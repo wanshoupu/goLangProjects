@@ -18,7 +18,7 @@ void assert(bool claim, const char* msg) {
 void print(int* s, int* e) {
     printf("\nIndexs: ");
     for(int* r = s; r < e; ++r)
-        printf("%6d, ", r - s);
+        printf("%6ld, ", r);
     printf("\nValues: ");
     for(; s < e; s++) {
         printf("%6d, ", *s);

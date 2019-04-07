@@ -39,7 +39,7 @@ int* part_original(int* s, int*e) {
     int* const pivot = s;
     while(true) {
         while(s < e && *++s < *pivot);  // find the next element >= pivot
-        while(pivot < e && *--e > *pivot); // find the prev element <= pivot
+        while(pivot < e && *pivot < *--e); // find the prev element <= pivot
         if (s < e) {
             swap(s, e); //swap the out-of-place elements
         } else {
@@ -60,8 +60,8 @@ int* part_original_var(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while(true) {
-        while(s < e && *pivot <= *e) --e; // find the prev element <= pivot
-        while(s < e && *s <= *pivot) ++s;  // find the next element >= pivot
+        while(s < e && *pivot <= *--e); // find the prev element <= pivot
+        while(s < e && *++s <= *pivot);  // find the next element >= pivot
         if (s < e) {
             swap(s, e); //swap the out-of-place elements
         } else {
@@ -139,15 +139,15 @@ int* part1(int* s, int*e) {
 }
 
 void qSort(int* s, int* e) {
-     if (e - s < 2) return;
-     if (e - s == 2) {
-         if (*(e - 1) < *s)
-             swap(s, e - 1);
-         return;
-     }
-     int* p = part_original_var(s, e);
-     qSort(s, p);
-     qSort(p + 1, e);
+    if (e - s < 2) return;
+    if (e - s == 2) {
+     if (*(e - 1) < *s)
+         swap(s, e - 1);
+     return;
+    }
+    int* p = part_original_var(s, e);
+    qSort(s, p);
+    qSort(p + 1, e);
 }
 
 const char* msg = "Error: array not sorted properly\n";
