@@ -49,6 +49,44 @@ int* part_original(int* s, int*e) {
     }
 }
 
+int* part_original_var3(int* s, int* e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s;
+    while(true) {
+        // '<=' or '<' is not critical. But '<=' brings more saving on unnecessary swaps.
+        while(s < e && *++s <= *pivot);
+        while(pivot < e && *pivot <= *--e);
+        if (s < e) {
+            swap(s, e);
+        } else {
+            swap(pivot, e);
+            return e;
+        }
+    }
+}
+
+/**
+ * Found another variation of partition scheme based on part_original
+ * Diff wise, it lies between part_original and part_original_var
+ * - the order of the two while loops is identical to part_original
+ * - the boundary checking is identical to part_original_var
+ * - the return value is shifted toward the left by one unit
+ */
+int* part_original_var2(int* s, int* e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s;
+    while(true) {
+        while(s < e && *++s <= *pivot);  // find the next element >= pivot
+        while(s < e && *pivot <= *--e); // find the prev element <= pivot
+        if (s < e) {
+            swap(s, e); //swap the out-of-place elements
+        } else {
+            swap(pivot, s - 1);
+            return s - 1;
+        }
+    }
+}
+
 /**
  * Variation of partition scheme from part_original.
  * The two differs in three ways
@@ -65,7 +103,7 @@ int* part_original_var(int* s, int*e) {
         if (s < e) {
             swap(s, e); //swap the out-of-place elements
         } else {
-            swap(pivot, e);
+            swap(pivot, s);
             return s;
         }
     }
@@ -76,9 +114,9 @@ int* part_thin_loop(int* s, int*e) {
     int* const pivot = s++;
     e--;
     while(true) {
-         if (s < e && *s < *pivot) {  // find the next element >= pivot
+         if (s < e && *s <= *pivot) {  // find the next element >= pivot
              ++s;
-         } else if (pivot < e && *e > *pivot) { // find the prev element <= pivot
+         } else if (pivot < e && *pivot <= *e) { // find the prev element <= pivot
              --e;
          } else if (s < e) {
              swap(s++, e--); //swap the out-of-place elements
@@ -145,7 +183,7 @@ void qSort(int* s, int* e) {
          swap(s, e - 1);
      return;
     }
-    int* p = part_original_var(s, e);
+    int* p = part_thin_loop(s, e);
     qSort(s, p);
     qSort(p + 1, e);
 }
@@ -222,6 +260,15 @@ void unit_left_bound_exception() {
     unit_test(test, size);
 }
 
+void unit_test_limited_rand() {
+    const int size = 100;
+    int test[size];
+    for (int i = 0; i < size; ++i) {
+        test[i] = rand() % 3;
+    }
+    unit_test(test, size);
+}
+
 int main() {
     printf("unit_left_bound_exception");
     unit_left_bound_exception();
@@ -241,6 +288,8 @@ int main() {
     unit_test_big_cross();
     printf("unit_test_eq");
     unit_test_eq();
+    printf("unit_test_limited_rand");
+    unit_test_limited_rand();
     printf("unit_test_happy");
     unit_test_happy();
 }

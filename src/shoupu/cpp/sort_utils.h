@@ -8,7 +8,7 @@ void swap(int* a, int* b) {
     *b = t;
 }
 
-void assert(bool claim, const char* msg) {
+void assert(bool claim, const char* msg='\0') {
     if (!claim) {
         printf("%s", msg);
         exit(1);
