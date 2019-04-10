@@ -20,17 +20,18 @@ int part_simple(int* arr, int left, int right) {
 }
 
 int part_nested(int* arr, int left, int right) {
-    for (int i = left, j = right; ;) {
+    int* const pivot = arr + left;
+    while(true) {
         // note the order: right first, then left
-        while (arr[j] >= arr[left] && i < j)
-            j--;
-        while (arr[i] <= arr[left] && i < j)
-            i++;
-        if (i < j) {
-            swap(arr + i, arr + j);
+        while (left < right && arr[right] >= *pivot)
+            right--;
+        while (left < right && arr[left] <= *pivot)
+            left++;
+        if (left < right) {
+            swap(arr + left, arr + right);
         } else {
-            swap(arr + i, arr + left);
-            return i;
+            swap(arr + left, pivot);
+            return left;
         }
     }
 }
@@ -38,13 +39,13 @@ int part_nested(int* arr, int left, int right) {
 int part_unnested(int* arr, int left, int right) {
     for (int i = left, j = right; ;) {
         // note the order: right first, then left
-        if (arr[j] >= arr[left] && i < j)
+        if (i < j && arr[j] >= arr[left])
             j--;
-        else if (arr[i] <= arr[left] && i < j)
+        else if (i < j && arr[i] <= arr[left])
             i++;
-        else if (i < j) {
+        else if (i < j)
             swap(arr + i, arr + j);
-        } else {
+        else {
             swap(arr + i, arr + left);
             return i;
         }
@@ -54,7 +55,6 @@ int part_unnested(int* arr, int left, int right) {
 void quicksort(int* arr, int left, int right) {
     if (left >= right)
        return;
-
     int i = part_unnested(arr, left, right);
     quicksort(arr, left, i - 1);
     quicksort(arr, i + 1, right);
@@ -63,10 +63,10 @@ void quicksort(int* arr, int left, int right) {
 const char* msg = "Error: array not sorted properly\n";
 
 void unit_test(int* test, int size) {
-    printf("Unit test: ");
     print(test, size);
     quicksort(test, 0, size - 1);
     assert(is_sorted(test + 1, test + size), msg);
+    printf("Unit test success!\n========================\n");
 }
 
 void unit_test_0() {

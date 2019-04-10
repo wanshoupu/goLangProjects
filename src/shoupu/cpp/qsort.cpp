@@ -34,7 +34,7 @@ void rand_swap(int* s, int* e) {
     swap(e - 1, s + 2); // e - 1, has the maximum of the 3
 }
 
-int* part_original(int* s, int*e) {
+int* part_nested_loop(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while(true) {
@@ -49,7 +49,7 @@ int* part_original(int* s, int*e) {
     }
 }
 
-int* part_original_var3(int* s, int* e) {
+int* part_nested_loop_var3(int* s, int* e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while(true) {
@@ -66,13 +66,13 @@ int* part_original_var3(int* s, int* e) {
 }
 
 /**
- * Found another variation of partition scheme based on part_original
- * Diff wise, it lies between part_original and part_original_var
- * - the order of the two while loops is identical to part_original
- * - the boundary checking is identical to part_original_var
+ * Found another variation of partition scheme based on part_nested_loop
+ * Diff wise, it lies between part_nested_loop and part_nested_loop_var
+ * - the order of the two while loops is identical to part_nested_loop
+ * - the boundary checking is identical to part_nested_loop_var
  * - the return value is shifted toward the left by one unit
  */
-int* part_original_var2(int* s, int* e) {
+int* part_nested_loop_var2(int* s, int* e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while(true) {
@@ -87,14 +87,34 @@ int* part_original_var2(int* s, int* e) {
     }
 }
 
+int* part_thin_loop_var2(int* s, int*e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s;
+    ++s;
+    while(true) {
+        --e;
+        while(s < e && *s <= *pivot)  // find the next element >= pivot
+        {++s;}
+        while(s < e && *pivot <= *e)
+        {--e;}
+        if (s < e) {
+            swap(s++, e); //swap the out-of-place elements
+        } else {
+            swap(pivot, s - 1);
+            return s - 1;
+        }
+    }
+}
+
+
 /**
- * Variation of partition scheme from part_original.
+ * Variation of partition scheme from part_nested_loop.
  * The two differs in three ways
  * - order of the two while loops
  * - increment condition for equal element pointer
  * - return pointer choice between s and e
  */
-int* part_original_var(int* s, int*e) {
+int* part_nested_loop_var(int* s, int*e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while(true) {
@@ -102,6 +122,45 @@ int* part_original_var(int* s, int*e) {
         while(s < e && *++s <= *pivot);  // find the next element >= pivot
         if (s < e) {
             swap(s, e); //swap the out-of-place elements
+        } else {
+            swap(pivot, s);
+            return s;
+        }
+    }
+}
+
+/*
+Find yet another variation of implementation where the second nested while-loop
+is made post-incremental.
+This will remove the difficulty encountered in loop-thinning.
+*/
+int* part_nested_loop_var4(int* s, int*e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s;
+    while(true) {
+        while(s < e && *pivot <= *--e); // find the prev element <= pivot
+        while(s < e && *s <= *pivot)++s;  // find the next element >= pivot
+        if (s < e) {
+            swap(s, e); //swap the out-of-place elements
+        } else {
+            swap(pivot, s);
+            return s;
+        }
+    }
+}
+
+/*
+loop-thinned version of part_nested_loop_var4
+*/
+int* part_thin_loop_var4(int* s, int*e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s;
+    --e;
+    while(true) {
+        if(s < e && *pivot <= *e)--e; // find the prev element <= pivot
+        else if(s < e && *s <= *pivot)++s;  // find the next element >= pivot
+        else if (s < e) {
+            swap(s, e--); //swap the out-of-place elements
         } else {
             swap(pivot, s);
             return s;
@@ -183,7 +242,7 @@ void qSort(int* s, int* e) {
          swap(s, e - 1);
      return;
     }
-    int* p = part_thin_loop(s, e);
+    int* p = part_nested_loop_var4(s, e);
     qSort(s, p);
     qSort(p + 1, e);
 }
