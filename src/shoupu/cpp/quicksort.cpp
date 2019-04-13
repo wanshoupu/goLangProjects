@@ -19,52 +19,56 @@ int part_simple(int* arr, int left, int right) {
     return i;
 }
 
-int part_nested(int* arr, int left, int right) {
-    int* const pivot = arr + left;
+int* part_nested_closed(int* left, int* right) {
+    int* const pivot = left;
     while(true) {
         // note the order: right first, then left
-        while (left < right && arr[right] >= *pivot)
+        while (left < right && *right >= *pivot)
             right--;
-        while (left < right && arr[left] <= *pivot)
+        while (left < right && *left <= *pivot)
             left++;
         if (left < right) {
-            swap(arr + left, arr + right);
+            swap(left, right);
         } else {
-            swap(arr + left, pivot);
+            swap(left, pivot);
             return left;
         }
     }
 }
 
-int part_unnested(int* arr, int left, int right) {
-    for (int i = left, j = right; ;) {
+int* part_unnested_closed(int* left, int* right) {
+    int* const pivot = left;
+    while(true) {
         // note the order: right first, then left
-        if (i < j && arr[j] >= arr[left])
-            j--;
-        else if (i < j && arr[i] <= arr[left])
-            i++;
-        else if (i < j)
-            swap(arr + i, arr + j);
+        if (left < right && *right >= *pivot)
+            right--;
+        else if (left < right && *left <= *pivot)
+            left++;
+        else if (left < right)
+            swap(left, right);
         else {
-            swap(arr + i, arr + left);
-            return i;
+            swap(left, pivot);
+            return left;
         }
     }
 }
 
-void quicksort(int* arr, int left, int right) {
+/*
+do quicksort on array bound by two pointers left and right, both inclusive
+*/
+void quicksort(int* left, int* right) {
     if (left >= right)
        return;
-    int i = part_unnested(arr, left, right);
-    quicksort(arr, left, i - 1);
-    quicksort(arr, i + 1, right);
+    int* i = part_unnested_closed(left, right);
+    quicksort(left, i - 1);
+    quicksort(i + 1, right);
 }
 
 const char* msg = "Error: array not sorted properly\n";
 
 void unit_test(int* test, int size) {
     print(test, size);
-    quicksort(test, 0, size - 1);
+    quicksort(test, test + size - 1);
     assert(is_sorted(test + 1, test + size), msg);
     printf("Unit test success!\n========================\n");
 }

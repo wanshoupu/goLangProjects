@@ -49,7 +49,10 @@ int* part_nested_loop(int* s, int* e) {
     }
 }
 
-int* part_nested_loop_var3(int* s, int* e) {
+/*
+For elements equal to the pivot, we don't stop
+*/
+int* part_nested_loop_var1(int* s, int* e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while (true) {
@@ -87,28 +90,6 @@ int* part_nested_loop_var2(int* s, int* e) {
     }
 }
 
-int* part_thin_loop_var2(int* s, int* e) {
-    swap(s, s + rand() % (e - s));
-    int* const pivot = s;
-    ++s;
-    while (true) {
-        --e;
-        while (s < e && *s <= *pivot) // find the next element >= pivot
-        {
-            ++s;
-        }
-        while (s < e && *pivot <= *e) {
-            --e;
-        }
-        if (s < e) {
-            swap(s++, e); //swap the out-of-place elements
-        } else {
-            swap(pivot, s - 1);
-            return s - 1;
-        }
-    }
-}
-
 /**
  *Variation of partition scheme from part_nested_loop.
  *The two differs in three ways
@@ -116,7 +97,7 @@ int* part_thin_loop_var2(int* s, int* e) {
  *- increment condition for equal element pointer
  *- return pointer choice between s and e
  */
-int* part_nested_loop_var(int* s, int* e) {
+int* part_nested_loop_var3(int* s, int* e) {
     swap(s, s + rand() % (e - s));
     int* const pivot = s;
     while (true) {
@@ -147,6 +128,28 @@ int* part_nested_loop_var4(int* s, int* e) {
         } else {
             swap(pivot, s);
             return s;
+        }
+    }
+}
+
+int* part_thin_loop_var2(int* s, int* e) {
+    swap(s, s + rand() % (e - s));
+    int* const pivot = s;
+    ++s;
+    while (true) {
+        --e;
+        while (s < e && *s <= *pivot) // find the next element >= pivot
+        {
+            ++s;
+        }
+        while (s < e && *pivot <= *e) {
+            --e;
+        }
+        if (s < e) {
+            swap(s++, e); //swap the out-of-place elements
+        } else {
+            swap(pivot, s - 1);
+            return s - 1;
         }
     }
 }
