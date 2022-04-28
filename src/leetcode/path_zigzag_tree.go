@@ -45,7 +45,7 @@ func main() {
 	}
 	for _, test := range tests {
 		path := pathInZigZagTree(test.Input)
-		fmt.Printf("%v\n", path)
+		fmt.Println(test.Input, path)
 		utils.AssertEq(test.Output, path)
 	}
 }
