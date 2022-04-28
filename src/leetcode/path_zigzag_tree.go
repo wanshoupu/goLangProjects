@@ -6,6 +6,7 @@ import (
 )
 
 /**
+https://leetcode.com/problems/path-in-zigzag-labelled-binary-tree/
 In an infinite binary tree where every node has two children,
 the nodes are labelled in row order.
 
@@ -23,31 +24,12 @@ Input: label = 26
 Output: [1,2,6,10,26]
 */
 func pathInZigZagTree(label int) []int {
-	layer := GetLayer(label)
-	rank := label - (1 << layer)
-	labels := []int{rank}
-	for rank > 0 {
-		rank >>= 1
-		labels = append(labels, rank)
-	}
-	for i := range labels {
-		if i&1 > 1 {
-			labels[i] = 1<<i - labels[i]
-		}
-		labels[i]++
+	var labels []int
+	for label > 0 {
+		labels = append(labels, label)
+		label = utils.ParentLabel(label)
 	}
 	return utils.Reverse(labels)
-}
-
-func GetLayer(label int) int {
-	var layer int
-	for {
-		if label == 0 {
-			return layer
-		}
-		label &= label - 1
-		layer++
-	}
 }
 
 func main() {
@@ -55,31 +37,15 @@ func main() {
 		Input  int
 		Output []int
 	}{
+		{4, []int{1, 3, 4}},
+		{3, []int{1, 3}},
 		{14, []int{1, 3, 4, 14}},
-		{1, []int{}},
-		{0, []int{}},
+		{1, []int{1}},
+		{19, []int{1, 3, 4, 14, 19}},
 	}
 	for _, test := range tests {
 		label := pathInZigZagTree(test.Input)
 		fmt.Printf("%s\n", label)
-		//AssertEq(test.Output, label)
+		utils.AssertEq(test.Output, label)
 	}
-}
-
-func AssertEq(expected []int, actual []int) {
-	if !testEq(expected, actual) {
-		panic(fmt.Sprintf("not equal: '%s', '%s'", expected, actual))
-	}
-}
-
-func testEq(a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
 }
