@@ -44,8 +44,8 @@ func main() {
 		{19, []int{1, 3, 4, 14, 19}},
 	}
 	for _, test := range tests {
-		label := pathInZigZagTree(test.Input)
-		fmt.Printf("%s\n", label)
-		utils.AssertEq(test.Output, label)
+		path := pathInZigZagTree(test.Input)
+		fmt.Printf("%v\n", path)
+		utils.AssertEq(test.Output, path)
 	}
 }

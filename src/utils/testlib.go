@@ -1,4 +1,4 @@
-package util
+package utils
 
 func AssertEquals(expected, actual interface{}) {
 	if expected != actual {

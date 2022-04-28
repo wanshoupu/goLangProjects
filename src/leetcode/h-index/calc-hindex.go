@@ -1,6 +1,6 @@
 package main
 
-import "shoupu/util"
+import "mygo/utils"
 
 func hindex(arr []int) int {
 	return 0
@@ -12,11 +12,10 @@ func main() {
 		ans int
 	}
 	tests := []Test{
-		{arr: []int{1, 23, 4}, ans: 3,},
+		{arr: []int{1, 23, 4}, ans: 3},
 	}
 	for _, test := range tests {
 		ans := hindex(test.arr)
-		util.AssertEquals(ans, test)
+		utils.AssertEquals(ans, test)
 	}
 }
-
