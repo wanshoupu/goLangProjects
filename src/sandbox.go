@@ -1,26 +1,40 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
-type Vertex struct {
-	X, Y int
+type I interface {
+	M()
 }
 
-func sum(s []int, c chan int) {
-	sum := 0
-	for _, v := range s {
-		sum += v
-	}
-	c <- sum // send sum to c
+type T struct {
+	S string
+}
+
+func (t *T) M() {
+	fmt.Println("TM", t.S)
+}
+
+type F float64
+
+func (f F) M() {
+	fmt.Println("FM", f)
 }
 
 func main() {
-	s := []int{7, 2, 8, -9, 4, 0}
+	var i I
 
-	c := make(chan int)
-	go sum(s[:len(s)/2], c)
-	go sum(s[len(s)/2:], c)
-	x, y := <-c, <-c // receive from c
+	i = &T{"Hello"}
+	describe(i)
+	i.M()
 
-	fmt.Println(x, y, x+y)
+	i = F(math.Pi)
+	describe(i)
+	i.M()
+}
+
+func describe(i I) {
+	fmt.Printf("describe(%v, %T)\n", i, i)
 }
