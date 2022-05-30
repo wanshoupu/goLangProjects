@@ -17,7 +17,7 @@ func worker(visited map[string]int, queue *Queue, wg *sync.WaitGroup, limit int)
 		if nextUrl == nil {
 			break
 		}
-		fmt.Println(nextUrl)
+		log.Println(nextUrl)
 		urls := fetch(nextUrl.(string))
 		for _, urlCandidate := range urls {
 			if _, ok := visited[urlCandidate]; ok {
@@ -69,7 +69,6 @@ func extractUrls(resp *http.Response) []string {
 			if string(name) == "a" {
 				href := extractHref(tokenizer)
 				thisUrl := normalizeUrl(href, resp.Request.URL)
-				log.Println(thisUrl)
 				hrefMap[thisUrl] += 1
 			}
 		}

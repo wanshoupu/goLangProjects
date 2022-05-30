@@ -22,18 +22,18 @@ func main() {
 }
 
 func runJob(concurrency string, seed string) {
-	visited := make(map[string]int)
 	concur, err := strconv.Atoi(concurrency)
 	if err != nil {
 		log.Fatalf("error parsing cmd line argument: %v", err)
 	}
+	visited := make(map[string]int, concur)
 	queue := NewQueue(concur)
 	queue.Push(seed)
 
 	var wg sync.WaitGroup
-	wg.Add(5)
-	for i := 0; i < 5; i++ {
-		go worker(visited, queue, &wg, 1000)
+	wg.Add(concur)
+	for i := 0; i < concur; i++ {
+		go worker(visited, queue, &wg, 3000)
 	}
 	wg.Wait()
 	fmt.Println("done")
