@@ -17,15 +17,14 @@ It will avoid the cyclic traversal of links.
 
 */
 func main() {
-	seed, concurrency := os.Args[1], os.Args[2]
-	runJob(concurrency, seed)
+	seed, concurrency, total := os.Args[1], os.Args[2], os.Args[3]
+	runJob(concurrency, seed, total)
 }
 
-func runJob(concurrency string, seed string) {
-	concur, err := strconv.Atoi(concurrency)
-	if err != nil {
-		log.Fatalf("error parsing cmd line argument: %v", err)
-	}
+func runJob(concurrencyStr string, seed string, totalStr string) {
+	concur := atoi(concurrencyStr)
+	total := atoi(totalStr)
+
 	visited := make(map[string]int, concur)
 	queue := NewQueue(concur)
 	queue.Push(seed)
@@ -33,11 +32,19 @@ func runJob(concurrency string, seed string) {
 	var wg sync.WaitGroup
 	wg.Add(concur)
 	for i := 0; i < concur; i++ {
-		go worker(visited, queue, &wg, 3000)
+		go worker(visited, queue, &wg, total)
 	}
 	wg.Wait()
 	fmt.Println("done")
 	for k, v := range visited {
 		fmt.Println(k, v)
 	}
+}
+
+func atoi(concurrency string) int {
+	concur, err := strconv.Atoi(concurrency)
+	if err != nil {
+		log.Fatalf("error parsing cmd line argument: %v", err)
+	}
+	return concur
 }

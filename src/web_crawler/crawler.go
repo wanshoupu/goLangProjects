@@ -66,7 +66,7 @@ func extractUrls(resp *http.Response) []string {
 			log.Fatalf("error tokenizing HTML: %v", tokenizer.Err())
 		} else if next == html.StartTagToken {
 			name, _ := tokenizer.TagName()
-			if string(name) == "a" {
+			if string(name) == "a" || string(name) == "link" {
 				href := extractHref(tokenizer)
 				thisUrl := normalizeUrl(href, resp.Request.URL)
 				hrefMap[thisUrl] += 1
