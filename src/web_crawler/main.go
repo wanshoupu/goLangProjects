@@ -20,12 +20,41 @@ It will avoid the cyclic traversal of links.
 */
 func main() {
 	pas := os.Args
-	for i, pa := range pas {
-		fmt.Println(i, pa)
-		body := fetch(pa)
-		fmt.Println(body)
+	visited := make(map[string]int)
+	queue := NewQueue(1000)
 
+	for _, pa := range pas {
+		queue.Push(pa)
 	}
+
+	for len(visited) < 1000 && valueSum(visited) < 1000 {
+		pa := queue.Pop()
+		if pa == nil {
+			break
+		}
+		fmt.Println(pa)
+		visited[pa.(string)] += 1
+		if _, ok := visited[pa.(string)]; !ok {
+			continue
+		}
+		urls := fetch(pa.(string))
+		for _, u := range urls {
+			queue.Push(u)
+		}
+	}
+
+	fmt.Println("done")
+	for k, v := range visited {
+		fmt.Println(k, v)
+	}
+}
+
+func valueSum(myDict map[string]int) int {
+	result := 0
+	for _, v := range myDict {
+		result += v
+	}
+	return result
 }
 
 func fetch(pa string) []string {
@@ -33,7 +62,7 @@ func fetch(pa string) []string {
 	resp, err := client.Get(pa)
 	if err != nil {
 		fmt.Println(err)
-		return nil
+		return []string{}
 	}
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
@@ -82,6 +111,8 @@ func normalizeUrl(thisUrl string, req *url.URL) string {
 	if parsedUrl.Host == "" {
 		parsedUrl.Host = req.Host
 		parsedUrl.Scheme = req.Scheme
+	} else if parsedUrl.Scheme == "" {
+		parsedUrl.Scheme = "http"
 	}
 	return parsedUrl.String()
 }
