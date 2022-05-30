@@ -1,11 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"golang.org/x/net/html"
 	"io"
+	"log"
 	"net/http"
+	"net/url"
 	"os"
 )
 
@@ -34,52 +35,66 @@ func fetch(pa string) []string {
 		fmt.Println(err)
 		return nil
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 	return extractUrls(resp)
 }
 
 func extractUrls(resp *http.Response) []string {
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil
-	}
-	r := bytes.NewReader(body)
-	doc, err := html.Parse(r)
-	if err != nil {
-		return nil
-	}
-
-	var result []string
-	nodes := traverse(doc)
-	for _, n := range nodes {
-		if n.Data == "href" {
-			result = append(result, n.FirstChild.Data)
+	tokenizer := html.NewTokenizer(resp.Body)
+	var hrefMap = make(map[string]int)
+	for {
+		next := tokenizer.Next()
+		if next == html.ErrorToken {
+			err := tokenizer.Err()
+			if err == io.EOF {
+				//end of the file, break out of the loop
+				break
+			}
+			//otherwise, there was an error tokenizing,
+			//which likely means the HTML was malformed.
+			log.Fatalf("error tokenizing HTML: %v", tokenizer.Err())
+		} else if next == html.StartTagToken {
+			name, _ := tokenizer.TagName()
+			if string(name) == "a" {
+				href := extractHref(tokenizer)
+				thisUrl := normalizeUrl(href, resp.Request.URL)
+				log.Println(thisUrl)
+				hrefMap[thisUrl] += 1
+			}
 		}
 	}
-	return result
-}
-
-func traverse(root *html.Node) []html.Node {
-	if root == nil {
-		return []html.Node{}
-	}
-	var result []html.Node
-
-	if root.Type == html.ElementNode {
-		result = append(result, traverseSubtree(root)...)
-	}
-	for ; root.NextSibling != nil; root = root.NextSibling {
-		result = append(result, traverse(root.NextSibling)...)
+	var result = make([]string, len(hrefMap))
+	i := 0
+	for k := range hrefMap {
+		result[i] = k
+		i++
 	}
 	return result
 }
 
-func traverseSubtree(root *html.Node) []html.Node {
-	var result []html.Node
-	if root.Type != html.ElementNode {
-		return result
+func normalizeUrl(thisUrl string, req *url.URL) string {
+	parsedUrl, err := url.Parse(thisUrl)
+	if err != nil {
+		return ""
 	}
-	if root.FirstChild != nil {
+	if parsedUrl.Host == "" {
+		parsedUrl.Host = req.Host
+		parsedUrl.Scheme = req.Scheme
+	}
+	return parsedUrl.String()
+}
 
+func extractHref(tokenizer *html.Tokenizer) string {
+	for {
+		key, val, hasMore := tokenizer.TagAttr()
+		if string(key) == "href" {
+			return string(val)
+		}
+		if !hasMore {
+			break
+		}
 	}
+	return ""
 }
