@@ -9,27 +9,31 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 )
 
 const privKeyPath = "key/private-key.pem"
 const pubKeyPath = "key/public-key.pem"
+const outputFile = "output/ciphertext"
 
 func main() {
 	if _, err := os.Stat(privKeyPath); errors.Is(err, os.ErrNotExist) {
 		keyGen(2048)
 	}
-	privateKey, publicKey, _ := loadKey(privKeyPath)
-	//privateKey, publicKey, err := loadKey(pubKeyPath)
+	//privateKey, publicKey, _ := loadKey(privKeyPath)
+	privateKey, publicKey, _ := loadKey(pubKeyPath)
 
-	testMsg := "the brown fox jumps over the lazy dog"
+	testMsg := "For God so loved the world, that He gave His only begotten Son, " +
+		"that whoever believes in Him shall not perish, but have eternal life."
 
 	ciphertext, _ := encrypt([]byte(testMsg), *publicKey)
-	encoded := base64.StdEncoding.EncodeToString([]byte(ciphertext))
+	encoded := base64.StdEncoding.EncodeToString(ciphertext)
 	// Since encryption is a randomized function, ciphertext will be
 	// different each time.
-	fmt.Printf("Ciphertext: %x\n", encoded)
+	fmt.Printf("Ciphertext: %s\n", encoded)
+	fileDump(ciphertext, outputFile)
 
 	if privateKey != nil {
 		recoveredMsg := string(decrypt(privateKey, ciphertext))
@@ -38,6 +42,25 @@ func main() {
 		// the cast to a string and print
 		fmt.Println("decrypted message: ", recoveredMsg)
 	}
+}
+
+func fileDump(ciphertext []byte, filePath string) {
+	fileDir := filepath.Dir(filePath)
+	if _, err := os.Stat(fileDir); err != nil {
+		os.MkdirAll(fileDir, os.ModePerm)
+	}
+	// Open a new file for writing only
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	// Write bytes to file
+	bytesWritten, err := file.Write(ciphertext)
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("Wrote %d bytes.\n", bytesWritten)
 }
 
 func decrypt(privateKey *rsa.PrivateKey, ciphertext []byte) []byte {
@@ -52,17 +75,16 @@ func decrypt(privateKey *rsa.PrivateKey, ciphertext []byte) []byte {
 	return decryptedBytes
 }
 
-func encrypt(secretMessage []byte, publicKey rsa.PublicKey) ([]byte, bool) {
+func encrypt(secretMessage []byte, publicKey rsa.PublicKey) ([]byte, error) {
 	// crypto/rand.Reader is a good source of entropy for randomizing the
 	// encryption function.
 	rng := rand.Reader
 
 	ciphertext, err := rsa.EncryptPKCS1v15(rng, &publicKey, secretMessage)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error from encryption: %s\n", err)
-		return nil, true
+		panic(fmt.Sprintf("Error from encryption: %s\n", err))
 	}
-	return ciphertext, false
+	return ciphertext, nil
 }
 
 func loadKey(keyFile string) (*rsa.PrivateKey, *rsa.PublicKey, error) {
