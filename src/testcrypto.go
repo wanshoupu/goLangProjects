@@ -19,14 +19,19 @@ const pubKeyPath = "key/public-key.pem"
 const outputFile = "output/ciphertext"
 
 func main() {
+	testMsg := os.Args[1]
+	var keyFile string
+	if len(os.Args) > 2 {
+		keyFile = os.Args[2]
+	} else {
+		//keyFile := privKeyPath
+		keyFile = pubKeyPath
+	}
+
 	if _, err := os.Stat(privKeyPath); errors.Is(err, os.ErrNotExist) {
 		keyGen(2048)
 	}
-	//privateKey, publicKey, _ := loadKey(privKeyPath)
-	privateKey, publicKey, _ := loadKey(pubKeyPath)
-
-	testMsg := "For God so loved the world, that He gave His only begotten Son, " +
-		"that whoever believes in Him shall not perish, but have eternal life."
+	privateKey, publicKey, _ := loadKey(keyFile)
 
 	ciphertext, _ := encrypt([]byte(testMsg), *publicKey)
 	encoded := base64.StdEncoding.EncodeToString(ciphertext)
@@ -60,7 +65,7 @@ func fileDump(ciphertext []byte, filePath string) {
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("Wrote %d bytes.\n", bytesWritten)
+	log.Printf("Wrote %d bytes to %s.\n", bytesWritten, filePath)
 }
 
 func decrypt(privateKey *rsa.PrivateKey, ciphertext []byte) []byte {
