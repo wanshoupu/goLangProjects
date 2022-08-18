@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/pem"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -14,6 +17,7 @@ func main() {
 
 	message := strings.Repeat("Hello Encrypt", 1000)
 	keyString := "BLCI27HrCTIWc5/QxeRK5n59ygE2bSbulofJ1DP0fGw="
+	keyString, _ = LoadAESKey("key/aes-key.pem")
 	symCrypto(keyString, message)
 }
 
@@ -47,6 +51,27 @@ func AESKeyGen() string {
 
 	//encode key in bytes to string and keep as secret, put in a vault
 	return base64.StdEncoding.EncodeToString(bytes)
+}
+
+func LoadAESKey(keyFile string) (string, error) {
+	kf, err := os.Open(keyFile)
+	if err != nil {
+		panic(err)
+	}
+	pemfileinfo, _ := kf.Stat()
+	var size int64 = pemfileinfo.Size()
+	pembytes := make([]byte, size)
+	buffer := bufio.NewReader(kf)
+	_, err = buffer.Read(pembytes)
+	if err != nil {
+		panic(err)
+	}
+	data, _ := pem.Decode(pembytes)
+	kf.Close()
+	if err == nil {
+		return base64.StdEncoding.EncodeToString(data.Bytes), nil
+	}
+	panic(fmt.Sprintf("loading key failed: \"%s\"", err))
 }
 
 func EncryptAES(key []byte, message []byte) []byte {
