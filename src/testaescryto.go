@@ -18,7 +18,7 @@ const cipherTextFile = "output/ciphertext"
 
 func main() {
 
-	message := strings.Repeat("Hello Encrypt", 1000)
+	message := strings.Repeat("Hello Encrypt", 2)
 	if _, err := os.Stat(aesKeyFile); err != nil {
 		keyString := AESKeyGen()
 		key, _ := base64.StdEncoding.DecodeString(keyString)
@@ -41,7 +41,7 @@ func SymCrypto(keyBase64 string, message string) {
 
 	ciphertext := EncryptAES(key, []byte(message))
 	b64 := base64.StdEncoding.EncodeToString(ciphertext)
-	fmt.Printf("ciphertext %x\n", b64)
+	fmt.Printf("ciphertext %s\n", b64)
 	os.WriteFile(cipherTextFile, []byte(b64), 0644)
 	recoveredMsg := DecryptAES(key, ciphertext)
 	if string(recoveredMsg) != message {
@@ -104,6 +104,22 @@ func LoadAESKey(keyFile string) (string, error) {
 }
 
 func EncryptAES(key []byte, message []byte) []byte {
+	aesGCM, err := CreateGCMCipher(key)
+
+	//Create a nonce. Nonce should be from GCM
+	nonce := make([]byte, aesGCM.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		panic(err.Error())
+	}
+
+	//Encrypt the data using aesGCM.Seal
+	//Since we don't want to save the nonce somewhere else in this case,
+	//we add it as a prefix to the encrypted data. The first nonce argument in Seal is the prefix.
+	ciphertext := aesGCM.Seal(nonce, nonce, message, nil)
+	return ciphertext
+}
+
+func CreateGCMCipher(key []byte) (cipher.AEAD, error) {
 	//Create a new Cipher Block from the key
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -116,32 +132,11 @@ func EncryptAES(key []byte, message []byte) []byte {
 	if err != nil {
 		panic(err.Error())
 	}
-
-	//Create a nonce. Nonce should be from GCM
-	nonce := make([]byte, aesGCM.NonceSize())
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
-	}
-
-	//Encrypt the data using aesGCM.Seal
-	//Since we don't want to save the nonce somewhere else in this case, we add it as a prefix to the encrypted data. The first nonce argument in Seal is the prefix.
-	ciphertext := aesGCM.Seal(nonce, nonce, message, nil)
-	return ciphertext
+	return aesGCM, err
 }
 
 func DecryptAES(key []byte, ciphertext []byte) []byte {
-
-	//Create a new Cipher Block from the key
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	//Create a new GCM
-	aesGCM, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
+	aesGCM, err := CreateGCMCipher(key)
 
 	//Get the nonce size
 	nonceSize := aesGCM.NonceSize()
