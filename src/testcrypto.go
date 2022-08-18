@@ -16,7 +16,6 @@ import (
 
 const privKeyPath = "key/private-key.pem"
 const pubKeyPath = "key/public-key.pem"
-const aesKey = "key/public-key.pem"
 const outputFile = "output/ciphertext"
 
 func main() {

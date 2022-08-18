@@ -13,20 +13,27 @@ import (
 	"strings"
 )
 
+const aesKeyFile = "key/aes-key.pem"
+
 func main() {
 
 	message := strings.Repeat("Hello Encrypt", 1000)
-	keyString := "BLCI27HrCTIWc5/QxeRK5n59ygE2bSbulofJ1DP0fGw="
-	keyString, _ = LoadAESKey("key/aes-key.pem")
-	symCrypto(keyString, message)
+	if _, err := os.Stat(aesKeyFile); err != nil {
+		keyString := AESKeyGen()
+		key, _ := base64.StdEncoding.DecodeString(keyString)
+		SaveAESKey(key, aesKeyFile)
+	}
+	keyString, _ := LoadAESKey(aesKeyFile)
+	SymCrypto(keyString, message)
+	os.Remove(aesKeyFile)
+	fmt.Printf("key to encrypt/DecryptAES : %s\n", keyString)
 }
 
-func symCrypto(keyBase64 string, message string) {
+func SymCrypto(keyBase64 string, message string) {
 	if keyBase64 == "" {
 		keyBase64 = AESKeyGen()
-		fmt.Printf("key to encrypt/DecryptAES : %s\n", keyBase64)
-
 	}
+	fmt.Printf("key to encrypt/DecryptAES : %s\n", keyBase64)
 	key, _ := base64.StdEncoding.DecodeString(keyBase64)
 
 	fmt.Printf("msg to be encrypted %s\n", message)
@@ -51,6 +58,27 @@ func AESKeyGen() string {
 
 	//encode key in bytes to string and keep as secret, put in a vault
 	return base64.StdEncoding.EncodeToString(bytes)
+}
+
+func SaveAESKey(key []byte, keyFile string) error {
+	pemPrivateBlock := &pem.Block{
+		Type:  "AES KEY",
+		Bytes: key,
+	}
+
+	pemFile, err := os.Create(keyFile)
+	defer pemFile.Close()
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = pem.Encode(pemFile, pemPrivateBlock)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return err
 }
 
 func LoadAESKey(keyFile string) (string, error) {
