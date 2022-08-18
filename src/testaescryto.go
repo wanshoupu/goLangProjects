@@ -14,6 +14,7 @@ import (
 )
 
 const aesKeyFile = "key/aes-key.pem"
+const cipherTextFile = "output/ciphertext"
 
 func main() {
 
@@ -25,7 +26,7 @@ func main() {
 	}
 	keyString, _ := LoadAESKey(aesKeyFile)
 	SymCrypto(keyString, message)
-	os.Remove(aesKeyFile)
+	//os.Remove(aesKeyFile)
 	fmt.Printf("key to encrypt/DecryptAES : %s\n", keyString)
 }
 
@@ -39,9 +40,9 @@ func SymCrypto(keyBase64 string, message string) {
 	fmt.Printf("msg to be encrypted %s\n", message)
 
 	ciphertext := EncryptAES(key, []byte(message))
-
-	fmt.Printf("ciphertext %x\n", ciphertext)
-
+	b64 := base64.StdEncoding.EncodeToString(ciphertext)
+	fmt.Printf("ciphertext %x\n", b64)
+	os.WriteFile(cipherTextFile, []byte(b64), 0644)
 	recoveredMsg := DecryptAES(key, ciphertext)
 	if string(recoveredMsg) != message {
 		panic("Recovered message != original message")
