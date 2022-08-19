@@ -3,7 +3,6 @@ package main
 import (
 	"cryptodemo/mylib"
 	"encoding/base64"
-	"fmt"
 	"os"
 )
 
@@ -19,7 +18,6 @@ func main() {
 	}
 	if _, error := os.Stat(keyFile); error != nil {
 		keyString := mylib.AESKeyGen()
-		fmt.Println(keyString)
 		key, _ := base64.StdEncoding.DecodeString(keyString)
 		mylib.SaveAESKey(key, keyFile)
 	}
