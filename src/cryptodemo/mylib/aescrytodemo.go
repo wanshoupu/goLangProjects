@@ -1,4 +1,4 @@
-package main
+package mylib
 
 import (
 	"bufio"
@@ -13,20 +13,22 @@ import (
 	"strings"
 )
 
-const aesKeyFile = "key/aes-key.pem"
-const cipherTextFile = "output/ciphertext"
+const AesKeyFile = "key/aes-key.pem"
+const CipherTextFile = "output/ciphertext"
 
 func main() {
 
 	message := strings.Repeat("Hello Encrypt", 2)
-	if _, err := os.Stat(aesKeyFile); err != nil {
+	fmt.Printf("msg to be encrypted %s\n", message)
+	if _, err := os.Stat(AesKeyFile); err != nil {
 		keyString := AESKeyGen()
 		key, _ := base64.StdEncoding.DecodeString(keyString)
-		SaveAESKey(key, aesKeyFile)
+		SaveAESKey(key, AesKeyFile)
 	}
-	keyString, _ := LoadAESKey(aesKeyFile)
+
+	keyString, _ := LoadAESKey(AesKeyFile)
 	SymCrypto(keyString, message)
-	//os.Remove(aesKeyFile)
+	//os.Remove(AesKeyFile)
 	fmt.Printf("key to encrypt/DecryptAES : %s\n", keyString)
 }
 
@@ -34,20 +36,15 @@ func SymCrypto(keyBase64 string, message string) {
 	if keyBase64 == "" {
 		keyBase64 = AESKeyGen()
 	}
-	fmt.Printf("key to encrypt/DecryptAES : %s\n", keyBase64)
 	key, _ := base64.StdEncoding.DecodeString(keyBase64)
-
-	fmt.Printf("msg to be encrypted %s\n", message)
 
 	ciphertext := EncryptAES(key, []byte(message))
 	b64 := base64.StdEncoding.EncodeToString(ciphertext)
-	fmt.Printf("ciphertext %s\n", b64)
-	os.WriteFile(cipherTextFile, []byte(b64), 0644)
+	fmt.Println(b64)
+	os.WriteFile(CipherTextFile, []byte(b64), 0644)
 	recoveredMsg := DecryptAES(key, ciphertext)
 	if string(recoveredMsg) != message {
 		panic("Recovered message != original message")
-	} else {
-		fmt.Println("Successfully completed encryption/decryption")
 	}
 }
 

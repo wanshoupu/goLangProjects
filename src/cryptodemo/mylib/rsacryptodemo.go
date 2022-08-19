@@ -1,4 +1,4 @@
-package main
+package mylib
 
 import (
 	"bufio"
@@ -14,26 +14,28 @@ import (
 	"path/filepath"
 )
 
-const privKeyPath = "key/private-key.pem"
-const pubKeyPath = "key/public-key.pem"
-const outputFile = "output/ciphertext"
+const PrivKeyPath = "key/private-key.pem"
+const PubKeyPath = "key/public-key.pem"
+const OutputFile = "output/ciphertext"
 
-func main() {
+func test() {
 	testMsg := os.Args[1]
 	var keyFile string
 	if len(os.Args) > 2 {
 		keyFile = os.Args[2]
 	} else {
-		//keyFile = privKeyPath
-		keyFile = pubKeyPath
+		//keyFile = PrivKeyPath
+		keyFile = PubKeyPath
 		//keyFile = aesKey
 	}
 
-	asymCrypto(keyFile, testMsg)
+	AsymCrypto(keyFile, testMsg)
+	keyString, _ := LoadAESKey(AesKeyFile)
+	SymCrypto(keyString, testMsg)
 }
 
-func asymCrypto(keyFile string, testMsg string) {
-	if _, err := os.Stat(privKeyPath); errors.Is(err, os.ErrNotExist) {
+func AsymCrypto(keyFile string, testMsg string) {
+	if _, err := os.Stat(PrivKeyPath); errors.Is(err, os.ErrNotExist) {
 		keyGen(2048)
 	}
 	privateKey, publicKey, _ := loadKey(keyFile)
@@ -43,7 +45,7 @@ func asymCrypto(keyFile string, testMsg string) {
 	// Since encryption is a randomized function, ciphertext will be
 	// different each time.
 	fmt.Printf("Ciphertext: %s\n", encoded)
-	fileDump(ciphertext, outputFile)
+	fileDump(ciphertext, OutputFile)
 
 	if privateKey != nil {
 		recoveredMsg := string(decrypt(privateKey, ciphertext))
@@ -86,7 +88,7 @@ func decrypt(privateKey *rsa.PrivateKey, ciphertext []byte) []byte {
 }
 
 func encrypt(secretMessage []byte, publicKey rsa.PublicKey) ([]byte, error) {
-	// crypto/rand.Reader is a good source of entropy for randomizing the
+	// cryptodemo/rand.Reader is a good source of entropy for randomizing the
 	// encryption function.
 	rng := rand.Reader
 
@@ -125,11 +127,11 @@ func loadKey(keyFile string) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 }
 
 func keyGen(size int) {
-	if stat, _ := os.Stat(privKeyPath); stat != nil {
+	if stat, _ := os.Stat(PrivKeyPath); stat != nil {
 		panic("private key file already exists")
 	}
 
-	keyDir := filepath.Dir(privKeyPath)
+	keyDir := filepath.Dir(PrivKeyPath)
 	if _, err := os.Stat(keyDir); err != nil {
 		os.MkdirAll(keyDir, os.ModePerm)
 	}
@@ -137,7 +139,7 @@ func keyGen(size int) {
 	if err != nil {
 		panic(err)
 	}
-	pemPrivateFile, err := os.Create(privKeyPath)
+	pemPrivateFile, err := os.Create(PrivKeyPath)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
