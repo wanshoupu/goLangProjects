@@ -13,6 +13,7 @@ bin
 pkg
 build
 build-eclipse
-out
+out/
 src/generated/
 tmp
+*.pem

@@ -3,10 +3,21 @@ package main
 import (
 	"cryptodemo/mylib"
 	"encoding/base64"
+	"fmt"
 	"os"
 )
 
+type AType struct {
+	Foo int
+	Bar string
+}
+
 func main() {
+	var a = AType{Foo: 3, Bar: "abc"}
+	b := a
+	b.Foo = 4
+	fmt.Println(a)
+	fmt.Println(b)
 	testMsg := os.Args[1]
 	var keyFile string
 	if len(os.Args) > 2 {
